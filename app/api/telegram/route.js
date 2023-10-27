@@ -1,11 +1,7 @@
-import { Composer } from "micro-bot";
 import { NextResponse } from "next/server";
 const { Telegraf } = require("telegraf");
 
-const token = "1588288656:AAG0etwxH9EKDj0qHfkuQEimax73TfJ7YUk";
-
-const bot = new Telegraf(token);
-
+const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 // const bot = new Composer();
 
 bot.start((ctx) => ctx.reply("Bonjour !"));
@@ -3115,34 +3111,17 @@ export async function POST(req, res) {
     const body = Buffer.concat(chunks).toString("utf8");
     const parsedBody = JSON.parse(body);
 
-    // Step 1: Check Payload Structure
-    console.log("Parsed body:", parsedBody); // Debug line
-
-    // Step 2: Validation
     if (parsedBody?.message?.from?.id && parsedBody?.message?.chat?.id) {
-      console.log(
-        `User ID: ${parsedBody.message.from.id}, Chat ID: ${parsedBody.message.chat.id}`
-      );
+      await bot.handleUpdate(parsedBody);
+      return NextResponse.json({ status: "ok" });
     } else {
-      console.log("Missing 'id' in payload");
+      return NextResponse.json({ error: "Missing 'id' in payload" });
     }
-
-    // Step 5: Debugging (optional)
-    // Consider using a debugger here to inspect `parsedBody`
-
-    await bot.handleUpdate(parsedBody); // The main function call
-
-    return NextResponse.json({ status: "ok" });
   } catch (error) {
-    // Step 3: Trace the Source
-    console.error("Error caught:", error);
-
     return NextResponse.json({ error });
   }
 }
 
-// Step 6: Log Middleware (place this in your bot's initialization code)
 bot.use((ctx, next) => {
-  console.log("State update", ctx.update);
   return next(ctx);
 });
