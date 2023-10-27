@@ -1,35 +1,15 @@
-import { Composer } from "micro-bot";
 import { NextResponse } from "next/server";
 const { Telegraf } = require("telegraf");
 
-const token = "1588288656:AAG0etwxH9EKDj0qHfkuQEimax73TfJ7YUk";
-
-const bot = new Telegraf(token);
-
-// const bot = new Composer();
+const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
 bot.start((ctx) => ctx.reply("Bonjour !"));
-
-// Ce robot est un assistant pour les téléconseillers du centre de communication de Crous d'Île-de-France
-// Ce robot soutiens les commandes ainsi que les chats
-// J'ajouterai ici une liste des commandes et des mot clès que le bot comprendre
-
-// Micro bot codes for server
-
-// Importer des bibliothèques essentielles (pas pour en ligne)
-// const { Telegraf } = require('telegraf')
-
-// Controler le bot de Telegram
-
-// const bot = new Telegraf(token)
 
 // Les commandes principal
 
 bot.help((ctx) => {
   ctx.reply("Ce bot peut exécuter les ordres suivants\n - /start\n - /help");
 });
-
-// Les commandes alternatives
 
 // les adresses des responsables
 
@@ -3034,23 +3014,6 @@ bot.hears(["code", "codes"], (ctx) => {
     `);
 });
 
-// Si dans le chat on écrit quelque chose d'autre que les mots clès
-
-// bot.use((ctx) => {
-//     //ctx.reply("Que puis-je faire pour vous ?")
-//     ctx.reply(
-// `
-// Ce bot peut exécuter les ordres suivants :
-
-// /start   : Démarre le bot
-// /help    : Foire aux questions
-// /crous   : Les sites de Crous
-// /revision : Les révisions
-
-// `)
-
-// })
-
 bot.use((ctx) => {
   ctx.telegram.sendMessage(
     ctx.chat.id,
@@ -3093,19 +3056,6 @@ Vous pouvez appuyer sur les boutons en bas ou taper des mots clès (acronymes, n
   );
 });
 
-// bot.launch()
-
-// module.exports = bot;
-
-// crous-guide-bot
-// https://crous-guide-bot.herokuapp.com/
-// const token = '1588288656:AAG0etwxH9EKDj0qHfkuQEimax73TfJ7YUk'
-
-// heroku git:remote -a crous-guide-bot
-// git add .
-// git commit -m 'commit message'
-// git push heroku master
-
 export async function POST(req, res) {
   try {
     const chunks = [];
@@ -3115,18 +3065,15 @@ export async function POST(req, res) {
     const body = Buffer.concat(chunks).toString("utf8");
     const parsedBody = JSON.parse(body);
 
-    await bot.handleUpdate(parsedBody); // The main function call
+    await bot.handleUpdate(parsedBody);
 
     return NextResponse.json({ status: "ok" });
   } catch (error) {
-    // Step 3: Trace the Source
     console.error("Error caught:", error);
 
     return NextResponse.json({ error });
   }
 }
-
-// Step 6: Log Middleware (place this in your bot's initialization code)
 bot.use((ctx, next) => {
   return next(ctx);
 });
