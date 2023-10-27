@@ -3115,16 +3115,6 @@ export async function POST(req, res) {
     const body = Buffer.concat(chunks).toString("utf8");
     const parsedBody = JSON.parse(body);
 
-    // Step 2: Validation
-    if (parsedBody?.message?.from?.id && parsedBody?.message?.chat?.id) {
-      console.log("");
-    } else {
-      console.log("");
-    }
-
-    // Step 5: Debugging (optional)
-    // Consider using a debugger here to inspect `parsedBody`
-
     await bot.handleUpdate(parsedBody); // The main function call
 
     return NextResponse.json({ status: "ok" });
