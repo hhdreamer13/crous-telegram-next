@@ -3108,11 +3108,39 @@ Vous pouvez appuyer sur les boutons en bas ou taper des mots clès (acronymes, n
 
 export async function POST(req, res) {
   try {
-    console.log(bot);
-    await bot.handleUpdate(req.body);
+    const chunks = [];
+    for await (const chunk of req.body) {
+      chunks.push(chunk);
+    }
+    const body = Buffer.concat(chunks).toString("utf8");
+    const parsedBody = JSON.parse(body);
+
+    // Step 1: Check Payload Structure
+    console.log("Parsed body:", parsedBody); // Debug line
+
+    // Step 2: Validation
+    if (!parsedBody.id) {
+      // Adjust this based on what the expected 'id' should be
+      console.error("Missing 'id' in payload");
+      return NextResponse.json({ error: "Missing 'id' in payload" });
+    }
+
+    // Step 5: Debugging (optional)
+    // Consider using a debugger here to inspect `parsedBody`
+
+    await bot.handleUpdate(parsedBody); // The main function call
+
     return NextResponse.json({ status: "ok" });
   } catch (error) {
+    // Step 3: Trace the Source
     console.error("Error caught:", error);
+
     return NextResponse.json({ error });
   }
 }
+
+// Step 6: Log Middleware (place this in your bot's initialization code)
+bot.use((ctx, next) => {
+  console.log("State update", ctx.update);
+  return next(ctx);
+});
