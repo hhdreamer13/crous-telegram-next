@@ -3119,10 +3119,12 @@ export async function POST(req, res) {
     console.log("Parsed body:", parsedBody); // Debug line
 
     // Step 2: Validation
-    if (!parsedBody.id) {
-      // Adjust this based on what the expected 'id' should be
-      console.error("Missing 'id' in payload");
-      return NextResponse.json({ error: "Missing 'id' in payload" });
+    if (parsedBody?.message?.from?.id && parsedBody?.message?.chat?.id) {
+      console.log(
+        `User ID: ${parsedBody.message.from.id}, Chat ID: ${parsedBody.message.chat.id}`
+      );
+    } else {
+      console.log("Missing 'id' in payload");
     }
 
     // Step 5: Debugging (optional)
